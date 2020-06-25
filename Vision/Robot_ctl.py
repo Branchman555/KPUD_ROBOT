@@ -12,7 +12,6 @@ import tensorflow as tf
 from tensorflow.keras.models import model_from_json
 import serial
 import helper
-from MyRobot import Robot
 from MyRobot import *
 from multiprocessing import Process, Queue
 import threading
@@ -46,8 +45,8 @@ lock = threading.Lock()
 referenceOrigin = (126.730667, 37.342222)
 
 
-def callNodes(self, URL, start, end):
-    data = 'start={}&end={}&name=%22Johnny%22'.format(start, end)
+def callNodes(URL, start, end):
+    data = 'start={}&end={}&name=%22TEST_DRIVE%22'.format(start, end)
     # res = requests.get(URL, data=data)
     res = requests.post(URL, data=data, headers={"content-type": "application/x-www-form-urlencoded"})
     res_dict = json.loads(res.text)
@@ -65,7 +64,7 @@ def callNodes(self, URL, start, end):
 
 class Rover(Robot):
     def __init__(self):
-        super().__init__(gui=False)
+        super().__init__(gui=True)
         self.mode = 0
         self._forwardFlag = 0
         self._gpsX = 0
@@ -86,7 +85,7 @@ class Rover(Robot):
             uartRet = Robot_ser.serProtocol(self.ser_1)
             while not self.comuQ_1.empty():
                 temp = self.comuQ_1.get_nowait()
-            self.comuQ_2.put(uartRet)
+            self.comuQ_1.put(uartRet)
 
             # output = geo.convert(geo.GEO, geo.TM, geo.GeoPoint(uartRet[2], uartRet[1]))
             # self._gpsTime = uartRet[1]
@@ -134,9 +133,6 @@ class Rover(Robot):
             proc.start()
             self.comuProcs.append(proc)
 
-    def endRUart(self):
-        for proc in self.comuProcs:
-            proc.join()
 
     def endProcess(self):
         self.endComuFlag = 1
@@ -231,6 +227,7 @@ if __name__ == "__main__":
     # 로봇 통신 컨피규레이션
     thisRobot.startRUart(0)
     thisRobot.startRUart(1)
+    thisRobot.startRUart(2)
 
     sleep(2)
 
@@ -244,16 +241,16 @@ if __name__ == "__main__":
     countCurrentNode += 1
     currentNode = nodes[countCurrentNode]
 
-    # 로봇 통신 컨피규레이션
-    thisRobot.startRUart(0)
-    thisRobot.startRUart(1)
-    thisRobot.startRUart(2)
+    thisRobot.roverMoveStop()
+    thisRobot.setFocus()
+    thisRobot.setcolor(RED)
+    thisRobot.drawon()
 
     while not exit:
         cv2.waitKey(1000)
         tar_angle = thisRobot.calangle(currentNode[0], currentNode[1])
         thisRobot.roverMovePointTurn_abs(tar_angle)
-        thisRobot.roverMoveStart()
+        # thisRobot.roverMoveStart()
         cv2.waitKey(1000)
         while not exit:
             # 카메라 수신
@@ -277,8 +274,8 @@ if __name__ == "__main__":
                     thisRobot.roverMovePointTurn_rel(80)
                 elif diff < 0:
                     thisRobot.roverMovePointTurn_rel(-80)
-                thisRobot.roverMoveForward(10)
-                thisRobot.roverMoveStart()
+                #thisRobot.roverMoveForward(10)
+                #thisRobot.roverMoveStart()
                 continue
             elif dist_route < ROUTE_WIDTH / 2:
                 thisRobot.mode = VIS
@@ -328,4 +325,7 @@ if __name__ == "__main__":
             # =======================Serial Write===========================
             thisRobot.ser_2.write(dataFormat.encode())
             print(dataFormat)
+            thisRobot.endProcess()
             break
+
+    thisRobot.endsimul()

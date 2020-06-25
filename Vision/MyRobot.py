@@ -10,7 +10,6 @@ import requests, json
 import GeoConverter as geo
 from pyfiglet import Figlet
 
-
 from time import sleep
 
 # calculate relative degree
