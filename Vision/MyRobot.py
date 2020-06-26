@@ -149,7 +149,7 @@ class Robot:
         self._y = 500
         self._angle = 0
         self._shape = "circle"
-        self._speed = 0
+        self._speed = 1
         self._focusFlag = 0
 
         self._color = BLACK
@@ -397,8 +397,8 @@ if __name__ == "__main__":
     t_GPS.drawoff()
     t.setshape("triangle")
 
-    t.setspeed(3)
-    t_GPS.setspeed(3)
+    t.setspeed(1)
+    t_GPS.setspeed(1)
     mark_radius = 20
 
     GPS_ERR_VAL = 20
@@ -428,8 +428,8 @@ if __name__ == "__main__":
     t.drawoff()
     t_GPS.drawoff()
 
-    t.setspeed(0)
-    t_GPS.setspeed(0)
+    t.setspeed(1)
+    t_GPS.setspeed(1)
 
     t.setsize(4)
     t.setcolor(BLACK)

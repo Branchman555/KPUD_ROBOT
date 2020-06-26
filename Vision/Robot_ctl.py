@@ -246,6 +246,11 @@ if __name__ == "__main__":
     thisRobot.setcolor(RED)
     thisRobot.drawon()
 
+    while key is not ord('x'):
+
+
+        cv2.waitKey(30)
+
     while not exit:
         cv2.waitKey(1000)
         tar_angle = thisRobot.calangle(currentNode[0], currentNode[1])
