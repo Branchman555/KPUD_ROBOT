@@ -95,8 +95,7 @@ def serProtocol(ser):
                         pitch = int.from_bytes(dataParams[4][2:4], 'little', signed=True) / 16.0
                         roll = int.from_bytes(dataParams[4][4:], 'little', signed=True) / 16.0
                         ret = ("BNO", yaw, pitch, roll)
-                        print("BNO[{:1}|{:02x}] {:.3f}\t{:.3f}\t{:.3f}".format(str(dataParams[5][:2].decode()), chsum, roll,
-                                                                               pitch, yaw))
+#print("BNO[{:1}|{:02x}] {:.3f}\t{:.3f}\t{:.3f}".format(str(dataParams[5][:2].decode()), chsum, roll,pitch, yaw))
                     # =============   GPS Data
                     elif (dataParams[3] == b'2') and (len(dataParams[4]) >= 12):
                         gps_valid = dataParams[4][0]
@@ -104,8 +103,7 @@ def serProtocol(ser):
                         gps_lat = int.from_bytes(dataParams[4][5:9], 'little') / 1000000.0
                         gps_lng = int.from_bytes(dataParams[4][9:], 'little') / 1000000.0
                         ret = ("GPS", gps_time, gps_lat, gps_lng)
-                        print("GPS[{:1}|{:02x}] {:.3f}\t{:.6f}\t{:.6f}".format(str(dataParams[5][:2].decode()), chsum,
-                                                                               gps_time, gps_lat, gps_lng))
+#                       print("GPS[{:1}|{:02x}] {:.3f}\t{:.6f}\t{:.6f}".format(str(dataParams[5][:2].decode()), chsum, gps_time, gps_lat, gps_lng))
                     else:
                         print("Parse Error : ")
                         print(str(dataParams))

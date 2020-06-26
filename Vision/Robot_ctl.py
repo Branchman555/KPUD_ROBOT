@@ -41,7 +41,7 @@ ROUTE_WIDTH = 10
 VIS = 0
 GPS = 1
 
-lock = threading.Lock()
+#lock = threading.Lock()
 referenceOrigin = (126.730667, 37.342222)
 
 
@@ -64,7 +64,7 @@ def callNodes(URL, start, end):
 
 class Rover(Robot):
     def __init__(self):
-        super().__init__(gui=True)
+        super().__init__(gui=False)
         self.mode = 0
         self._forwardFlag = 0
         self._gpsX = 0
@@ -101,14 +101,21 @@ class Rover(Robot):
             self.comuQ_2.put(uartRet)
 
     def syncValue(self):
+        print("Sync Value Started!")
         while not self.endComuFlag:
+            print("TEST") 
+#if not self.comuQ_2.empty():
+#               uartRet = self.comuQ_2.get_nowait()
+#               print("MOTER===== "+str(uartRet))
             if not self.comuQ_1.empty():
                 uartRet = self.comuQ_1.get_nowait()
                 if uartRet[0] == "BNO":
+                    print(uartRet)
                     self.setangle(uartRet[1])
                     if self._forwardFlag:
                         self.forward(0.2)
                 elif uartRet[0] == "GPS":
+                    print(uartRet)
                     output = geo.convert(geo.GEO, geo.TM, geo.GeoPoint(uartRet[2], uartRet[1]))
                     self._gpsTime = uartRet[1]
                     self._gpsX = output.getX()
@@ -124,12 +131,12 @@ class Rover(Robot):
             self.syncThread.start()
         elif UartNum is 1:
             self.ser_1 = Robot_ser.serInit('/dev/ttyUSB0', 115200)
-            proc = Process(target=self.RUart_1, args=(self.comuQ_1,))
+            proc = Process(target=self.RUart_1)
             proc.start()
             self.comuProcs.append(proc)
         elif UartNum is 2:
             self.ser_2 = Robot_ser.serInit('/dev/ttyUSB1', 115200)
-            proc = Process(target=self.RUart_2, args=(self.comuQ_2,))
+            proc = Process(target=self.RUart_2)
             proc.start()
             self.comuProcs.append(proc)
 
@@ -212,10 +219,6 @@ if __name__ == "__main__":
     weights_file = args.model.replace('json', 'h5')
     model.load_weights(weights_file)
 
-    print("Ready... Go?")
-    input()
-    print("Program Started...!")
-
     nodes = callNodes('http://1.255.54.9:3000/getPath', 24, 43)
     print(nodes)
 
@@ -225,9 +228,13 @@ if __name__ == "__main__":
     thisRobot = Rover()
     thisRobot.show_version()
     # 로봇 통신 컨피규레이션
-    thisRobot.startRUart(0)
+    print("Ready... Go?")
+    input()
+    print("Program Started...!")
+
     thisRobot.startRUart(1)
     thisRobot.startRUart(2)
+    thisRobot.startRUart(0)
 
     sleep(2)
 
@@ -242,9 +249,6 @@ if __name__ == "__main__":
     currentNode = nodes[countCurrentNode]
 
     thisRobot.roverMoveStop()
-    thisRobot.setFocus()
-    thisRobot.setcolor(RED)
-    thisRobot.drawon()
 
     while not exit:
         cv2.waitKey(1000)
@@ -279,8 +283,10 @@ if __name__ == "__main__":
                 continue
             elif dist_route < ROUTE_WIDTH / 2:
                 thisRobot.mode = VIS
+                print("VISION MODE")
             else:
                 thisRobot.mode = GPS
+                print("GPS MODE")
 
             if thisRobot.mode is VIS:
                 ret, frame = cap.read()

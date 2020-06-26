@@ -94,7 +94,7 @@ class SimulWindow:
         while self._winstopflag is False:
         #while 1:
             cv2.imshow(self._winname, self._shimg)
-            cv2.waitKey(50)
+            cv2.waitKey(100)
         print("outto!!!")
 
     def resetwindow(self):
@@ -428,8 +428,8 @@ if __name__ == "__main__":
     t.drawoff()
     t_GPS.drawoff()
 
-    t.setspeed(0)
-    t_GPS.setspeed(0)
+    t.setspeed(1)
+    t_GPS.setspeed(1)
 
     t.setsize(4)
     t.setcolor(BLACK)
@@ -481,6 +481,7 @@ if __name__ == "__main__":
 
             t_GPS.setangle(t.getangle())
             if t_GPS.distance(node) < mark_radius:
+                print("TESSSSTTTTT")
                 if arrival_count > 3:
                     t.forward(2)
                     t_GPS.forward(2 + randn() * VEL_ERR_VAL)
@@ -634,9 +635,12 @@ if __name__ == "__main__":
         #
         # if key == ord('o'):
         #     myRobot1.drawoff()
-    cv2.waitKey(0)
+    print("\n\nENDTEST\n\n\n")
+    cv2.waitKey(1)
+    print("\n\nENDTEST\n\n\n")
     t_GPS.endsimul()
     t.endsimul()
+    print("\n\nENDTEST\n\n\n")
     #myRobot4 = Robot()
     #myRobot4.showrobotnum()
 
