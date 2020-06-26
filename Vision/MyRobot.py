@@ -91,11 +91,15 @@ class SimulWindow:
         return self._img
 
     def showwindow(self):
-        while self._winstopflag is False:
-        #while 1:
-            cv2.imshow(self._winname, self._shimg)
-            cv2.waitKey(100)
-        print("outto!!!")
+        print("WINSTOP: " + str(self._winstopflag))
+# while self._winstopflag is False:
+#while 1:
+        print("WINDOW TEST=====")
+        ret = cv2.imshow(self._winname, self._shimg)
+        print("IMSHOW RET : " + str(ret))
+#cv2.waitKey(10)
+        sleep(0.03)
+        print("After Sleep")
 
     def resetwindow(self):
         self._width = SimulWindow._default_width
@@ -104,14 +108,14 @@ class SimulWindow:
 
     def startwindow(self):
         cv2.namedWindow(self._winname)
-        cv2.imshow(self._winname, self._shimg)
+#cv2.imshow(self._winname, self._shimg)
         print("called st_win")
         if self._winstopflag:
             self._winstopflag = False
             print("window start")
             thread = threading.Thread(target=self.showwindow)
             # thread = threading.Thread(target=stt)
-            thread.daemon = True
+# thread.daemon = True
             thread.start()
 
     def endwindow(self):
@@ -160,7 +164,8 @@ class Robot:
         self._version = 1.0
         if not Robot._guiLock:
             if gui:
-                Robot._sm.startwindow()
+#Robot._sm.startwindow()
+                pass
             else:
                 Robot._guiLock = True
                 del Robot._sm
@@ -183,6 +188,7 @@ class Robot:
 
     def setFocus(self):
         if Robot._focusRobot == -1:
+            print("ROBOT FOCUSED!!")
             Robot._focusRobot = self._robot_num
             self._focusFlag = True
         else:
@@ -227,6 +233,7 @@ class Robot:
         if self._guiMode:
             access_img = Robot._sm.getwindow()
             cv2.circle(access_img, (int(self._x), int(self._y)), int(self._thickness / 2), self._color, -1)
+            Robot._sm.showwindow()
             if self._drawflag:
                 Robot._sm.writewindow()
         else:
@@ -262,6 +269,7 @@ class Robot:
                 print("Please Focus Robot At Least One!!!")
 
             if self._focusFlag:
+                print("WINMOVE TEST")
                 self._sm.movewindow(self._x - 256, self._y - 256)
 
     def forward(self, distance):
